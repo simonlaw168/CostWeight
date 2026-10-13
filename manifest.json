@@ -1,0 +1,18 @@
+{
+  "name": "CostWeight & CostArea",
+  "short_name": "CostWeight",
+  "description": "US, Taiwan, HK, and China Currency and Unit Converter",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%231e3c72'/%3E%3Cpath d='M256 96v288M128 192l128-48 128 48M96 288c0 35.3 28.7 64 64 64s64-28.7 64-64H96zm192 0c0 35.3 28.7 64 64 64s64-28.7 64-64H288zM192 416h128' stroke='%2364b5f6' stroke-width='32' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='256' cy='144' r='20' fill='%23ffb74d'/%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

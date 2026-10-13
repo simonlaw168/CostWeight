@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CostWeight &amp; CostArea Converter</title>
+  
+  <!-- PWA & Mobile App Manifest Tags -->
+  <meta name="theme-color" content="#121212">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CostWeight">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%231e3c72'/%3E%3Cpath d='M256 96v288M128 192l128-48 128 48M96 288c0 35.3 28.7 64 64 64s64-28.7 64-64H96zm192 0c0 35.3 28.7 64 64 64s64-28.7 64-64H288zM192 416h128' stroke='%2364b5f6' stroke-width='32' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='256' cy='144' r='20' fill='%23ffb74d'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%231e3c72'/%3E%3Cpath d='M256 96v288M128 192l128-48 128 48M96 288c0 35.3 28.7 64 64 64s64-28.7 64-64H96zm192 0c0 35.3 28.7 64 64 64s64-28.7 64-64H288zM192 416h128' stroke='%2364b5f6' stroke-width='32' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='256' cy='144' r='20' fill='%23ffb74d'/%3E%3C/svg%3E">
   <style>
     /* Default Dark Theme & Light Theme Variables */
     :root, [data-theme="dark"] {
@@ -496,9 +506,14 @@
         <h1>CostWeight &amp; CostArea</h1>
         <div style="font-size: 0.78rem; opacity: 0.85; margin-top: 2px;">US / TW / HK / CN Currency &amp; Unit Converter</div>
       </div>
-      <button class="theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Switch Light/Dark Mode">
-        ☀️ Light
-      </button>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <button class="theme-toggle-btn" id="btnInstallApp" onclick="installPwa()" style="display: none; background: rgba(66, 165, 245, 0.25); border-color: #64b5f6;" title="Install App to Home Screen">
+          📲 Install
+        </button>
+        <button class="theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+          ☀️ Light
+        </button>
+      </div>
     </div>
   </header>
 
@@ -1505,6 +1520,53 @@
 
     fetchLiveExchangeRates();
   });
+
+  /* =========================================================
+     PWA SERVICE WORKER & APP INSTALL PROMPT
+     ========================================================= */
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the default mini-infobar and save the event
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show the "📲 Install" button in the header
+    const btn = document.getElementById('btnInstallApp');
+    if (btn) btn.style.display = 'inline-flex';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    console.log('CostWeight PWA was installed successfully');
+    const btn = document.getElementById('btnInstallApp');
+    if (btn) btn.style.display = 'none';
+    deferredPrompt = null;
+  });
+
+  function installPwa() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        deferredPrompt = null;
+        const btn = document.getElementById('btnInstallApp');
+        if (btn) btn.style.display = 'none';
+      });
+    } else {
+      alert('To install: Tap the 3 dots (⋮) in Chrome and select "Install app" or "Add to Home screen".');
+    }
+  }
+
+  // Register service worker for offline caching and PWA support
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then((reg) => {
+        console.log('ServiceWorker registered with scope:', reg.scope);
+      }).catch((err) => {
+        console.log('ServiceWorker registration skipped (normal if not on https or local file):', err);
+      });
+    });
+  }
 </script>
 
 </body>
