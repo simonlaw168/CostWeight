@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CostWeight &amp; CostArea Converter</title>
+  <style>
+    /* Default Dark Theme & Light Theme Variables */
+    :root, [data-theme="dark"] {
+      --primary: #42a5f5;
+      --primary-hover: #1e88e5;
+      --secondary: #26a69a;
+      --accent: #ffa726;
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --box-bg: #272727;
+      --box-border: #383838;
+      --text: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border: #333333;
+      --input-bg: #2a2a2a;
+      --input-text: #ffffff;
+      --input-border: #444444;
+      --header-gradient: linear-gradient(135deg, #0d1b2a, #1b263b);
+      --tabs-bg: #0d1b2a;
+      --tab-active-bg: rgba(255, 255, 255, 0.12);
+      --exchange-bar-bg: #181b20;
+      --pill-bg: #222b36;
+      --pill-border: #3b506d;
+      --pill-text: #90caf9;
+      --unit-btn-bg: #1a2a3a;
+      --unit-btn-border: #2d4564;
+      --unit-btn-text: #64b5f6;
+      --badge-bg: #1b3823;
+      --badge-text: #81c784;
+      --banner-bg: #142918;
+      --banner-border: #2e5935;
+      --banner-title: #81c784;
+      --banner-text: #a5d6a7;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --primary: #1976d2;
+      --primary-hover: #1565c0;
+      --secondary: #26a69a;
+      --accent: #ff9800;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --box-bg: #fafbfc;
+      --box-border: #ebebeb;
+      --text: #212121;
+      --text-muted: #666666;
+      --border: #e0e0e0;
+      --input-bg: #ffffff;
+      --input-text: #212121;
+      --input-border: #cfd8dc;
+      --header-gradient: linear-gradient(135deg, #1e3c72, #2a5298);
+      --tabs-bg: #152b52;
+      --tab-active-bg: rgba(255, 255, 255, 0.12);
+      --exchange-bar-bg: #f0f4f8;
+      --pill-bg: #ffffff;
+      --pill-border: #90caf9;
+      --pill-text: #1976d2;
+      --unit-btn-bg: #e3f2fd;
+      --unit-btn-border: #bbdefb;
+      --unit-btn-text: #1565c0;
+      --badge-bg: #e8f5e9;
+      --badge-text: #2e7d32;
+      --banner-bg: #e8f5e9;
+      --banner-border: #a5d6a7;
+      --banner-title: #2e7d32;
+      --banner-text: #388e3c;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 10px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 540px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    /* Header & Navigation Tabs */
+    header {
+      background: var(--header-gradient);
+      color: white;
+      padding: 14px 16px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--tabs-bg);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px 10px;
+      background: transparent;
+      border: none;
+      color: #90a4ae;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: #ffffff;
+      background: var(--tab-active-bg);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Currency & Exchange Rate Bar */
+    .exchange-bar {
+      background: var(--exchange-bar-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .currency-switches {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1px solid var(--pill-border);
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:active {
+      transform: scale(0.97);
+      filter: brightness(1.15);
+    }
+
+    .rate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .rate-input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .rate-input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .rate-input-group input {
+      width: 100%;
+      max-width: 110px;
+      padding: 6px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--input-text);
+      background: var(--input-bg);
+      text-align: right;
+    }
+
+    .btn-update-rate {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-update-rate:active {
+      background: var(--primary-hover);
+    }
+
+    .rate-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* Main Tab Content */
+    .tab-content {
+      display: none;
+      padding: 16px;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .badge {
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Comparison Grid (Side-by-Side) */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .col-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--box-bg);
+      border: 1px solid var(--box-border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .col-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .unit-toggle-btn {
+      background: var(--unit-btn-bg);
+      color: var(--unit-btn-text);
+      border: 1px solid var(--unit-btn-border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .unit-toggle-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 8px 10px;
+      padding-right: 48px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--input-text);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      transition: border 0.15s ease;
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.25);
+    }
+
+    .input-wrapper .unit-tag {
+      position: absolute;
+      right: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Action Buttons Row */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--box-border);
+      background: var(--box-bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+      filter: brightness(1.1);
+    }
+
+    .action-btn.primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .action-btn.primary:active {
+      background: var(--primary-hover);
+    }
+
+    /* Comparison Result Banner */
+    .cmpr-banner {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      border-radius: 10px;
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cmpr-banner.active {
+      display: flex;
+    }
+
+    .cmpr-banner .cmpr-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--banner-title);
+    }
+
+    .cmpr-banner .cmpr-detail {
+      font-size: 0.82rem;
+      color: var(--banner-text);
+    }
+
+    /* Quick helper options */
+    .options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--box-bg);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .switch-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    select {
+      padding: 5px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--input-text);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <div class="header-content">
+      <div>
+        <h1>CostWeight &amp; CostArea</h1>
+        <div style="font-size: 0.78rem; opacity: 0.85; margin-top: 2px;">US / TW / HK / CN Currency &amp; Unit Converter</div>
+      </div>
+      <button class="theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+        ☀️ Light
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabCostWeight" onclick="switchTab('weight')">
+      ⚖️ CostWeight (Weight)
+    </button>
+    <button class="tab-btn" id="tabCostArea" onclick="switchTab('area')">
+      📐 CostArea (Land/Area)
+    </button>
+  </div>
+
+  <!-- Shared Currency Exchange Bar -->
+  <div class="exchange-bar">
+    <div class="currency-switches">
+      <button class="pill-btn" id="btnToggleUsHk" onclick="toggleUsdHkd()">
+        <span id="labelUsHk">USD ⇄ HKD</span>
+      </button>
+      <button class="pill-btn" id="btnToggleTwCn" onclick="toggleNtdCny()">
+        <span id="labelTwCn">NTD ⇄ CNY</span>
+      </button>
+    </div>
+
+    <div class="rate-row">
+      <div class="rate-input-group">
+        <label id="lblRate">1 <span id="lblBaseCur">USD</span> =</label>
+        <input type="number" step="0.0001" id="inputExchgRate" value="32.50" oninput="onExchangeRateInput()">
+        <span style="font-size: 0.85rem; font-weight: 600;" id="lblTargetCur">NTD</span>
+      </div>
+      <button class="btn-update-rate" onclick="fetchLiveExchangeRates()">
+        🔄 Live Rate
+      </button>
+    </div>
+    <div class="rate-status" id="rateStatus">Rate: Default (32.50) • Click "Live Rate" to update</div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: COST WEIGHT -->
+  <!-- ========================================== -->
+  <div class="tab-content active" id="viewWeight">
+    <!-- Regional Jin setting -->
+    <div class="options-row">
+      <span class="switch-label">Standard for Jin (斤):</span>
+      <select id="selJinType" onchange="onJinTypeChange()">
+        <option value="tw" selected>Taiwan / HK Jin (600g)</option>
+        <option value="cn">Mainland China Jin (500g)</option>
+      </select>
+    </div>
+
+    <!-- Main Comparison Grid -->
+    <div class="two-col-grid">
+      <!-- Left Column (Western / Base) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="titleWestCol">US Market</span>
+          <span class="badge" id="curWestTag">USD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblUnitPriceWest">$/Lb</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_pricePerUnit_west" placeholder="0.00" oninput="onInputWeight('pricePerUnit_west')">
+            <span class="unit-tag" id="tag_pricePerUnit_west">$/Lb</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Weight
+            <button class="unit-toggle-btn" onclick="toggleWestWeightUnit()">
+              ⇄ <span id="btnTxt_westUnit">Lb / Oz</span>
+            </button>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_qty_west" placeholder="0.00" oninput="onInputWeight('qty_west')">
+            <span class="unit-tag" id="tag_qty_west">Lb</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblTotalCostWest">USD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_total_west" placeholder="0.00" oninput="onInputWeight('total_west')">
+            <span class="unit-tag" id="tag_total_west">USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (Asian / Target) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="titleEastCol">Asian Market</span>
+          <span class="badge" id="curEastTag">NTD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblUnitPriceEast">NTD/Jin</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_pricePerUnit_east" placeholder="0.00" oninput="onInputWeight('pricePerUnit_east')">
+            <span class="unit-tag" id="tag_pricePerUnit_east">NTD/Jin</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Weight
+            <button class="unit-toggle-btn" onclick="toggleEastWeightUnit()">
+              ⇄ <span id="btnTxt_eastUnit">Jin / Gm</span>
+            </button>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_qty_east" placeholder="0.00" oninput="onInputWeight('qty_east')">
+            <span class="unit-tag" id="tag_qty_east">Jin</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblTotalCostEast">NTD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="w_total_east" placeholder="0.00" oninput="onInputWeight('total_east')">
+            <span class="unit-tag" id="tag_total_east">NTD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+      <button class="action-btn primary" onclick="compareWeightCost()">
+        ⚖️ Compare Best Value
+      </button>
+      <button class="action-btn" onclick="calcWestTotalFromWeight()">
+        <span id="btnTxtWestCalc">USD = $/Lb × Lb</span>
+      </button>
+      <button class="action-btn" onclick="calcEastTotalFromWeight()">
+        <span id="btnTxtEastCalc">NTD = NTD/Jin × Jin</span>
+      </button>
+      <button class="action-btn" onclick="calcWestUnitPriceFromTotal()">
+        <span id="btnTxtWestUnitPrice">$/Lb = Total ÷ Lb</span>
+      </button>
+      <button class="action-btn" onclick="calcEastUnitPriceFromTotal()">
+        <span id="btnTxtEastUnitPrice">NTD/Jin = Total ÷ Jin</span>
+      </button>
+    </div>
+
+    <!-- Comparison Result Banner -->
+    <div class="cmpr-banner" id="w_cmprBanner">
+      <div class="cmpr-title" id="w_cmprTitle">Comparison Result</div>
+      <div class="cmpr-detail" id="w_cmprDetail">Details...</div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 2: COST AREA -->
+  <!-- ========================================== -->
+  <div class="tab-content" id="viewArea">
+    <!-- Main Comparison Grid -->
+    <div class="two-col-grid">
+      <!-- Left Column (SqFt / SqM) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="a_titleWestCol">SqFt Market</span>
+          <span class="badge" id="a_curWestTag">USD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblAreaPriceWest">$/SqFt</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_pricePerUnit_west" placeholder="0.00" oninput="onInputArea('pricePerUnit_west')">
+            <span class="unit-tag" id="tag_a_pricePerUnit_west">$/SqFt</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Area Size
+            <button class="unit-toggle-btn" onclick="toggleWestAreaUnit()">
+              ⇄ <span id="btnTxt_westAreaUnit">SqFt / SqM</span>
+            </button>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_qty_west" placeholder="0.00" oninput="onInputArea('qty_west')">
+            <span class="unit-tag" id="tag_a_qty_west">SqFt</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="a_lblTotalCostWest">USD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_total_west" placeholder="0.00" oninput="onInputArea('total_west')">
+            <span class="unit-tag" id="tag_a_total_west">USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (Ping / Mu / SqM) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="a_titleEastCol">Asian Land</span>
+          <span class="badge" id="a_curEastTag">NTD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblAreaPriceEast">NTD/Ping</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_pricePerUnit_east" placeholder="0.00" oninput="onInputArea('pricePerUnit_east')">
+            <span class="unit-tag" id="tag_a_pricePerUnit_east">NTD/Ping</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Area Size
+            <button class="unit-toggle-btn" id="btnToggleEastArea" onclick="toggleEastAreaUnit()">
+              ⇄ <span id="btnTxt_eastAreaUnit">Ping / Mu</span>
+            </button>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_qty_east" placeholder="0.00" oninput="onInputArea('qty_east')">
+            <span class="unit-tag" id="tag_a_qty_east">Ping</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="a_lblTotalCostEast">NTD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="a_total_east" placeholder="0.00" oninput="onInputArea('total_east')">
+            <span class="unit-tag" id="tag_a_total_east">NTD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+      <button class="action-btn primary" onclick="compareAreaCost()">
+        📐 Compare Area Value
+      </button>
+      <button class="action-btn" onclick="calcWestTotalFromArea()">
+        <span id="btnTxtWestAreaCalc">USD = $/SqFt × SqFt</span>
+      </button>
+      <button class="action-btn" onclick="calcEastTotalFromArea()">
+        <span id="btnTxtEastAreaCalc">NTD = NTD/Ping × Ping</span>
+      </button>
+      <button class="action-btn" onclick="calcWestUnitPriceFromAreaTotal()">
+        <span id="btnTxtWestAreaUnitPrice">$/SqFt = Total ÷ SqFt</span>
+      </button>
+      <button class="action-btn" onclick="calcEastUnitPriceFromAreaTotal()">
+        <span id="btnTxtEastAreaUnitPrice">NTD/Ping = Total ÷ Ping</span>
+      </button>
+    </div>
+
+    <!-- Comparison Result Banner -->
+    <div class="cmpr-banner" id="a_cmprBanner">
+      <div class="cmpr-title" id="a_cmprTitle">Area Cost Comparison</div>
+      <div class="cmpr-detail" id="a_cmprDetail">Details...</div>
+    </div>
+  </div>
+
+  <footer>
+    CostWeight &amp; CostArea Web App • Dark &amp; Light Mode
+  </footer>
+</div>
+
+<script>
+  /* =========================================================
+     THEME TOGGLE (DARK / LIGHT)
+     ========================================================= */
+  function initTheme() {
+    const savedTheme = localStorage.getItem('costweight_theme') || 'dark';
+    setTheme(savedTheme);
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('costweight_theme', theme);
+    const btn = document.getElementById('btnThemeToggle');
+    if (btn) {
+      btn.innerHTML = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  /* =========================================================
+     MATHEMATICAL CONSTANTS (from original Java source code)
+     ========================================================= */
+  const ONE_GUN_TO_LB = 1.3228;        // Taiwan Jin to Lbs
+  const OZ_PER_LB = 16.0;              // 1 lb = 16 oz
+  const GM_PER_JIN_TW = 600.0;         // Taiwan / HK Jin = 600g
+  const GM_PER_JIN_CN = 500.0;         // China Jin = 500g
+
+  // Area Constants
+  const ONE_PNG_TO_SQFT = 35.59;       // 1 Ping = 35.59 sqft
+  const ONE_PNG_TO_SQM = 3.305785;     // 1 Ping = 3.305785 sqm
+  const ONE_MU_TO_PNG = 201.6668;      // 1 Mu = 201.6668 Ping
+  const ONE_PNG_TO_MU = 1.0 / 201.6668;
+  const ONE_MU_TO_SQM = 666.6667;      // 1 Mu = 666.6667 sqm
+  const ONE_SQM_TO_SQFT = 10.764;      // 1 sqm = 10.764 sqft
+  const ONE_SQFT_TO_SQM = 1.0 / 10.764;
+
+  /* =========================================================
+     APP STATE
+     ========================================================= */
+  const state = {
+    activeTab: 'weight',
+    isUsd: true,         // true = USD, false = HKD
+    isNtd: true,         // true = NTD, false = CNY
+    jinType: 'tw',       // 'tw' = 600g, 'cn' = 500g
+
+    // Weight Units
+    westWeightUnit: 'lb', // 'lb' or 'oz'
+    eastWeightUnit: 'jin', // 'jin' or 'gm'
+
+    // Area Units
+    westAreaUnit: 'sqft', // 'sqft' or 'sqm'
+    eastAreaUnit: 'png',  // 'png' or 'mu'
+
+    // Stored live rates (USD base)
+    rates: {
+      TWD: 32.50,
+      CNY: 7.24,
+      HKD: 7.78,
+      USD: 1.0
+    },
+
+    // Last edited tracking for auto-recalculation
+    lastEditedWeight: 'pricePerUnit_west',
+    lastEditedArea: 'pricePerUnit_west'
+  };
+
+  /* =========================================================
+     CURRENCY & EXCHANGE RATE HELPERS
+     ========================================================= */
+  function getBaseCurrencyCode() {
+    return state.isUsd ? 'USD' : 'HKD';
+  }
+
+  function getTargetCurrencyCode() {
+    return state.isNtd ? 'NTD' : 'CNY';
+  }
+
+  function calculateCurrentExchangeRate() {
+    const baseCode = state.isUsd ? 'USD' : 'HKD';
+    const targetCode = state.isNtd ? 'TWD' : 'CNY';
+
+    const baseToUsd = 1.0 / (state.rates[baseCode] || 1.0);
+    const targetInUsd = state.rates[targetCode] || 32.50;
+    return baseToUsd * targetInUsd;
+  }
+
+  function getCurrentExchangeRate() {
+    const val = parseFloat(document.getElementById('inputExchgRate').value);
+    return isNaN(val) || val <= 0 ? calculateCurrentExchangeRate() : val;
+  }
+
+  function updateCurrencyLabels() {
+    const base = getBaseCurrencyCode();
+    const target = getTargetCurrencyCode();
+
+    document.getElementById('lblBaseCur').textContent = base;
+    document.getElementById('lblTargetCur').textContent = target;
+    document.getElementById('curWestTag').textContent = base;
+    document.getElementById('curEastTag').textContent = target;
+    document.getElementById('a_curWestTag').textContent = base;
+    document.getElementById('a_curEastTag').textContent = target;
+
+    document.getElementById('titleWestCol').textContent = base === 'USD' ? 'US Market' : 'HK Market';
+    document.getElementById('titleEastCol').textContent = target === 'NTD' ? 'Taiwan Market' : 'China Market';
+    document.getElementById('a_titleWestCol').textContent = base === 'USD' ? 'US Real Estate' : 'HK Real Estate';
+    document.getElementById('a_titleEastCol').textContent = target === 'NTD' ? 'Taiwan Land' : 'China Land';
+
+    document.getElementById('tag_total_west').textContent = base;
+    document.getElementById('lblTotalCostWest').textContent = base;
+    document.getElementById('tag_total_east').textContent = target;
+    document.getElementById('lblTotalCostEast').textContent = target;
+
+    document.getElementById('tag_a_total_west').textContent = base;
+    document.getElementById('a_lblTotalCostWest').textContent = base;
+    document.getElementById('tag_a_total_east').textContent = target;
+    document.getElementById('a_lblTotalCostEast').textContent = target;
+
+    // Unit Price Tags
+    const westWeightUnitTag = state.westWeightUnit.toUpperCase();
+    const eastWeightUnitTag = state.eastWeightUnit === 'jin' ? 'Jin' : 'Gm';
+    const westUnitPriceStr = base === 'USD' ? `$/${westWeightUnitTag}` : `HKD/${westWeightUnitTag}`;
+    const eastUnitPriceStr = `${target}/${eastWeightUnitTag}`;
+
+    document.getElementById('lblUnitPriceWest').textContent = westUnitPriceStr;
+    document.getElementById('tag_pricePerUnit_west').textContent = westUnitPriceStr;
+    document.getElementById('lblUnitPriceEast').textContent = eastUnitPriceStr;
+    document.getElementById('tag_pricePerUnit_east').textContent = eastUnitPriceStr;
+
+    // Area Unit Price Tags
+    const westAreaTag = state.westAreaUnit === 'sqft' ? 'SqFt' : 'SqM';
+    const eastAreaTag = state.eastAreaUnit === 'png' ? 'Ping' : (state.eastAreaUnit === 'mu' ? 'Mu' : 'SqM');
+    const westAreaPriceStr = base === 'USD' ? `$/${westAreaTag}` : `HKD/${westAreaTag}`;
+    const eastAreaPriceStr = `${target}/${eastAreaTag}`;
+
+    document.getElementById('lblAreaPriceWest').textContent = westAreaPriceStr;
+    document.getElementById('tag_a_pricePerUnit_west').textContent = westAreaPriceStr;
+    document.getElementById('lblAreaPriceEast').textContent = eastAreaPriceStr;
+    document.getElementById('tag_a_pricePerUnit_east').textContent = eastAreaPriceStr;
+
+    // Button Labels
+    document.getElementById('btnTxtWestCalc').textContent = `${base} = ${westUnitPriceStr} × ${westWeightUnitTag}`;
+    document.getElementById('btnTxtEastCalc').textContent = `${target} = ${eastUnitPriceStr} × ${eastWeightUnitTag}`;
+    document.getElementById('btnTxtWestUnitPrice').textContent = `${westUnitPriceStr} = Total ÷ ${westWeightUnitTag}`;
+    document.getElementById('btnTxtEastUnitPrice').textContent = `${eastUnitPriceStr} = Total ÷ ${eastWeightUnitTag}`;
+
+    document.getElementById('btnTxtWestAreaCalc').textContent = `${base} = ${westAreaPriceStr} × ${westAreaTag}`;
+    document.getElementById('btnTxtEastAreaCalc').textContent = `${target} = ${eastAreaPriceStr} × ${eastAreaTag}`;
+    document.getElementById('btnTxtWestAreaUnitPrice').textContent = `${westAreaPriceStr} = Total ÷ ${westAreaTag}`;
+    document.getElementById('btnTxtEastAreaUnitPrice').textContent = `${eastAreaPriceStr} = Total ÷ ${eastAreaTag}`;
+
+    // Currency Switch Button States
+    document.getElementById('labelUsHk').textContent = state.isUsd ? 'USD (Click for HKD)' : 'HKD (Click for USD)';
+    document.getElementById('labelTwCn').textContent = state.isNtd ? 'NTD (Click for CNY)' : 'CNY (Click for NTD)';
+  }
+
+  function toggleUsdHkd() {
+    state.isUsd = !state.isUsd;
+    const newRate = calculateCurrentExchangeRate();
+    document.getElementById('inputExchgRate').value = newRate.toFixed(4);
+    updateCurrencyLabels();
+    recalculateActiveTab();
+  }
+
+  function toggleNtdCny() {
+    state.isNtd = !state.isNtd;
+    if (!state.isNtd) {
+      document.getElementById('selJinType').value = 'cn';
+      state.jinType = 'cn';
+    } else {
+      document.getElementById('selJinType').value = 'tw';
+      state.jinType = 'tw';
+    }
+    const newRate = calculateCurrentExchangeRate();
+    document.getElementById('inputExchgRate').value = newRate.toFixed(4);
+    updateCurrencyLabels();
+    recalculateActiveTab();
+  }
+
+  function onExchangeRateInput() {
+    recalculateActiveTab();
+  }
+
+  /* =========================================================
+     FREE OPEN CURRENCY EXCHANGE API INTEGRATION
+     ========================================================= */
+  async function fetchLiveExchangeRates() {
+    const statusEl = document.getElementById('rateStatus');
+    statusEl.textContent = 'Fetching live rates from open exchange API...';
+    statusEl.style.color = 'var(--primary)';
+
+    try {
+      const response = await fetch('https://open.er-api.com/v6/latest/USD');
+      if (!response.ok) throw new Error('Network response not ok');
+      const data = await response.json();
+
+      if (data && data.rates) {
+        state.rates.TWD = data.rates.TWD || 32.50;
+        state.rates.CNY = data.rates.CNY || 7.24;
+        state.rates.HKD = data.rates.HKD || 7.78;
+        state.rates.USD = 1.0;
+
+        const currentRate = calculateCurrentExchangeRate();
+        document.getElementById('inputExchgRate').value = currentRate.toFixed(4);
+
+        const timeStr = new Date().toLocaleTimeString();
+        statusEl.textContent = `Live updated: ${timeStr} (USD/TWD: ${data.rates.TWD.toFixed(2)}, USD/CNY: ${data.rates.CNY.toFixed(2)})`;
+        statusEl.style.color = 'var(--badge-text)';
+
+        recalculateActiveTab();
+      } else {
+        throw new Error('Invalid rate payload');
+      }
+    } catch (err) {
+      console.warn('Live rate fetch failed, using fallback:', err);
+      statusEl.textContent = 'Could not fetch live rate. Using fallback/manual rate.';
+      statusEl.style.color = '#ef5350';
+    }
+  }
+
+  /* =========================================================
+     WEIGHT LOGIC & CONVERSIONS (MainActivity)
+     ========================================================= */
+  function getGmPerJin() {
+    return state.jinType === 'tw' ? GM_PER_JIN_TW : GM_PER_JIN_CN;
+  }
+
+  function getJinToLb() {
+    if (state.jinType === 'tw') {
+      return ONE_GUN_TO_LB; // 1.3228
+    } else {
+      return (ONE_GUN_TO_LB / GM_PER_JIN_TW) * GM_PER_JIN_CN; // 500g Jin
+    }
+  }
+
+  function toggleWestWeightUnit() {
+    const oldUnit = state.westWeightUnit;
+    state.westWeightUnit = oldUnit === 'lb' ? 'oz' : 'lb';
+
+    const inputEl = document.getElementById('w_qty_west');
+    let val = parseFloat(inputEl.value);
+    if (!isNaN(val)) {
+      if (state.westWeightUnit === 'oz') {
+        val = val * OZ_PER_LB; // Lb -> Oz
+      } else {
+        val = val / OZ_PER_LB; // Oz -> Lb
+      }
+      inputEl.value = val.toFixed(2);
+    }
+
+    document.getElementById('tag_qty_west').textContent = state.westWeightUnit.toUpperCase();
+    updateCurrencyLabels();
+    recalculateWeight();
+  }
+
+  function toggleEastWeightUnit() {
+    const oldUnit = state.eastWeightUnit;
+    state.eastWeightUnit = oldUnit === 'jin' ? 'gm' : 'jin';
+
+    const inputEl = document.getElementById('w_qty_east');
+    let val = parseFloat(inputEl.value);
+    const gmPerJin = getGmPerJin();
+
+    if (!isNaN(val)) {
+      if (state.eastWeightUnit === 'gm') {
+        val = val * gmPerJin; // Jin -> Gm
+      } else {
+        val = val / gmPerJin; // Gm -> Jin
+      }
+      inputEl.value = val.toFixed(2);
+    }
+
+    document.getElementById('tag_qty_east').textContent = state.eastWeightUnit === 'jin' ? 'Jin' : 'Gm';
+    updateCurrencyLabels();
+    recalculateWeight();
+  }
+
+  function onJinTypeChange() {
+    state.jinType = document.getElementById('selJinType').value;
+    recalculateWeight();
+  }
+
+  function convertWeightWestToEast(westVal, westUnit, eastUnit) {
+    if (isNaN(westVal)) return NaN;
+    const lbs = westUnit === 'oz' ? westVal / OZ_PER_LB : westVal;
+    const jin = lbs / getJinToLb();
+    return eastUnit === 'gm' ? jin * getGmPerJin() : jin;
+  }
+
+  function convertWeightEastToWest(eastVal, eastUnit, westUnit) {
+    if (isNaN(eastVal)) return NaN;
+    const jin = eastUnit === 'gm' ? eastVal / getGmPerJin() : eastVal;
+    const lbs = jin * getJinToLb();
+    return westUnit === 'oz' ? lbs * OZ_PER_LB : lbs;
+  }
+
+  function convertUnitPriceWestToEast(westPrice, rate) {
+    if (isNaN(westPrice)) return NaN;
+    let eastPricePerJin = westPrice * rate * getJinToLb();
+    if (state.westWeightUnit === 'oz') {
+      eastPricePerJin = eastPricePerJin * OZ_PER_LB;
+    }
+    if (state.eastWeightUnit === 'gm') {
+      return eastPricePerJin / getGmPerJin();
+    }
+    return eastPricePerJin;
+  }
+
+  function convertUnitPriceEastToWest(eastPrice, rate) {
+    if (isNaN(eastPrice) || rate <= 0) return NaN;
+    let pricePerJin = eastPrice;
+    if (state.eastWeightUnit === 'gm') {
+      pricePerJin = eastPrice * getGmPerJin();
+    }
+    let westPricePerLb = pricePerJin / (rate * getJinToLb());
+    if (state.westWeightUnit === 'oz') {
+      return westPricePerLb / OZ_PER_LB;
+    }
+    return westPricePerLb;
+  }
+
+  function onInputWeight(field) {
+    state.lastEditedWeight = field;
+    recalculateWeight();
+  }
+
+  function recalculateWeight() {
+    const rate = getCurrentExchangeRate();
+    const last = state.lastEditedWeight;
+
+    if (last === 'pricePerUnit_west') {
+      const pWest = parseFloat(document.getElementById('w_pricePerUnit_west').value);
+      if (!isNaN(pWest)) {
+        const pEast = convertUnitPriceWestToEast(pWest, rate);
+        document.getElementById('w_pricePerUnit_east').value = pEast.toFixed(2);
+      }
+    } else if (last === 'pricePerUnit_east') {
+      const pEast = parseFloat(document.getElementById('w_pricePerUnit_east').value);
+      if (!isNaN(pEast)) {
+        const pWest = convertUnitPriceEastToWest(pEast, rate);
+        document.getElementById('w_pricePerUnit_west').value = pWest.toFixed(2);
+      }
+    }
+
+    if (last === 'qty_west') {
+      const qWest = parseFloat(document.getElementById('w_qty_west').value);
+      if (!isNaN(qWest)) {
+        const qEast = convertWeightWestToEast(qWest, state.westWeightUnit, state.eastWeightUnit);
+        document.getElementById('w_qty_east').value = qEast.toFixed(2);
+      }
+    } else if (last === 'qty_east') {
+      const qEast = parseFloat(document.getElementById('w_qty_east').value);
+      if (!isNaN(qEast)) {
+        const qWest = convertWeightEastToWest(qEast, state.eastWeightUnit, state.westWeightUnit);
+        document.getElementById('w_qty_west').value = qWest.toFixed(2);
+      }
+    }
+
+    if (last === 'total_west') {
+      const tWest = parseFloat(document.getElementById('w_total_west').value);
+      if (!isNaN(tWest)) {
+        document.getElementById('w_total_east').value = (tWest * rate).toFixed(2);
+      }
+    } else if (last === 'total_east') {
+      const tEast = parseFloat(document.getElementById('w_total_east').value);
+      if (!isNaN(tEast) && rate > 0) {
+        document.getElementById('w_total_west').value = (tEast / rate).toFixed(2);
+      }
+    }
+  }
+
+  function calcWestTotalFromWeight() {
+    const p = parseFloat(document.getElementById('w_pricePerUnit_west').value);
+    const q = parseFloat(document.getElementById('w_qty_west').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('w_total_west').value = (p * q).toFixed(2);
+      state.lastEditedWeight = 'total_west';
+      recalculateWeight();
+    }
+  }
+
+  function calcEastTotalFromWeight() {
+    const p = parseFloat(document.getElementById('w_pricePerUnit_east').value);
+    const q = parseFloat(document.getElementById('w_qty_east').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('w_total_east').value = (p * q).toFixed(2);
+      state.lastEditedWeight = 'total_east';
+      recalculateWeight();
+    }
+  }
+
+  function calcWestUnitPriceFromTotal() {
+    const t = parseFloat(document.getElementById('w_total_west').value);
+    const q = parseFloat(document.getElementById('w_qty_west').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('w_pricePerUnit_west').value = (t / q).toFixed(2);
+      state.lastEditedWeight = 'pricePerUnit_west';
+      recalculateWeight();
+    }
+  }
+
+  function calcEastUnitPriceFromTotal() {
+    const t = parseFloat(document.getElementById('w_total_east').value);
+    const q = parseFloat(document.getElementById('w_qty_east').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('w_pricePerUnit_east').value = (t / q).toFixed(2);
+      state.lastEditedWeight = 'pricePerUnit_east';
+      recalculateWeight();
+    }
+  }
+
+  function compareWeightCost() {
+    const rate = getCurrentExchangeRate();
+    let pWest = parseFloat(document.getElementById('w_pricePerUnit_west').value);
+    let pEast = parseFloat(document.getElementById('w_pricePerUnit_east').value);
+
+    const banner = document.getElementById('w_cmprBanner');
+    const titleEl = document.getElementById('w_cmprTitle');
+    const detailEl = document.getElementById('w_cmprDetail');
+
+    if (isNaN(pWest) || isNaN(pEast)) {
+      alert('Please enter both unit prices to compare.');
+      return;
+    }
+
+    let westInEastPerJin = pWest * rate * getJinToLb();
+    if (state.westWeightUnit === 'oz') westInEastPerJin *= OZ_PER_LB;
+
+    let eastInEastPerJin = pEast;
+    if (state.eastWeightUnit === 'gm') eastInEastPerJin *= getGmPerJin();
+
+    const baseName = getBaseCurrencyCode();
+    const targetName = getTargetCurrencyCode();
+
+    banner.classList.add('active');
+
+    if (Math.abs(westInEastPerJin - eastInEastPerJin) < 0.001) {
+      titleEl.textContent = '⚖️ Exactly Equal Value!';
+      detailEl.textContent = `Both options have an identical unit cost equivalent to ${westInEastPerJin.toFixed(2)} ${targetName}/Jin.`;
+    } else if (westInEastPerJin < eastInEastPerJin) {
+      const diffPct = (((eastInEastPerJin - westInEastPerJin) / eastInEastPerJin) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${baseName} Market is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${baseName} price equals ${westInEastPerJin.toFixed(2)} ${targetName}/Jin vs ${eastInEastPerJin.toFixed(2)} ${targetName}/Jin.`;
+    } else {
+      const diffPct = (((westInEastPerJin - eastInEastPerJin) / westInEastPerJin) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${targetName} Market is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${targetName} price equals ${eastInEastPerJin.toFixed(2)} ${targetName}/Jin vs ${westInEastPerJin.toFixed(2)} ${targetName}/Jin from ${baseName}.`;
+    }
+  }
+
+  /* =========================================================
+     AREA LOGIC & CONVERSIONS (Activity2)
+     ========================================================= */
+  function toggleWestAreaUnit() {
+    state.westAreaUnit = state.westAreaUnit === 'sqft' ? 'sqm' : 'sqft';
+
+    const inputEl = document.getElementById('a_qty_west');
+    let val = parseFloat(inputEl.value);
+    if (!isNaN(val)) {
+      if (state.westAreaUnit === 'sqm') {
+        val = val * ONE_SQFT_TO_SQM;
+      } else {
+        val = val * ONE_SQM_TO_SQFT;
+      }
+      inputEl.value = val.toFixed(2);
+    }
+
+    document.getElementById('tag_a_qty_west').textContent = state.westAreaUnit === 'sqft' ? 'SqFt' : 'SqM';
+    updateCurrencyLabels();
+    recalculateArea();
+  }
+
+  function toggleEastAreaUnit() {
+    state.eastAreaUnit = state.eastAreaUnit === 'png' ? 'mu' : 'png';
+
+    const inputEl = document.getElementById('a_qty_east');
+    let val = parseFloat(inputEl.value);
+    if (!isNaN(val)) {
+      if (state.eastAreaUnit === 'mu') {
+        val = val * ONE_PNG_TO_MU;
+      } else {
+        val = val * ONE_MU_TO_PNG;
+      }
+      inputEl.value = val.toFixed(3);
+    }
+
+    document.getElementById('tag_a_qty_east').textContent = state.eastAreaUnit === 'png' ? 'Ping' : 'Mu';
+    updateCurrencyLabels();
+    recalculateArea();
+  }
+
+  function convertAreaWestToEast(westVal, westUnit, eastUnit) {
+    if (isNaN(westVal)) return NaN;
+    const sqft = westUnit === 'sqm' ? westVal * ONE_SQM_TO_SQFT : westVal;
+    const ping = sqft / ONE_PNG_TO_SQFT;
+    return eastUnit === 'mu' ? ping * ONE_PNG_TO_MU : ping;
+  }
+
+  function convertAreaEastToWest(eastVal, eastUnit, westUnit) {
+    if (isNaN(eastVal)) return NaN;
+    const ping = eastUnit === 'mu' ? eastVal * ONE_MU_TO_PNG : eastVal;
+    const sqft = ping * ONE_PNG_TO_SQFT;
+    return westUnit === 'sqm' ? sqft * ONE_SQFT_TO_SQM : sqft;
+  }
+
+  function convertAreaPriceWestToEast(westPrice, rate) {
+    if (isNaN(westPrice)) return NaN;
+    let pricePerSqFt = westPrice;
+    if (state.westAreaUnit === 'sqm') {
+      pricePerSqFt = westPrice * ONE_SQFT_TO_SQM;
+    }
+
+    let eastPricePerPing = pricePerSqFt * rate * ONE_PNG_TO_SQFT;
+    if (state.eastAreaUnit === 'mu') {
+      return eastPricePerPing * ONE_MU_TO_PNG;
+    }
+    return eastPricePerPing;
+  }
+
+  function convertAreaPriceEastToWest(eastPrice, rate) {
+    if (isNaN(eastPrice) || rate <= 0) return NaN;
+    let pricePerPing = eastPrice;
+    if (state.eastAreaUnit === 'mu') {
+      pricePerPing = eastPrice / ONE_MU_TO_PNG;
+    }
+
+    let westPricePerSqFt = pricePerPing / (rate * ONE_PNG_TO_SQFT);
+    if (state.westAreaUnit === 'sqm') {
+      return westPricePerSqFt * ONE_SQM_TO_SQFT;
+    }
+    return westPricePerSqFt;
+  }
+
+  function onInputArea(field) {
+    state.lastEditedArea = field;
+    recalculateArea();
+  }
+
+  function recalculateArea() {
+    const rate = getCurrentExchangeRate();
+    const last = state.lastEditedArea;
+
+    if (last === 'pricePerUnit_west') {
+      const pWest = parseFloat(document.getElementById('a_pricePerUnit_west').value);
+      if (!isNaN(pWest)) {
+        const pEast = convertAreaPriceWestToEast(pWest, rate);
+        document.getElementById('a_pricePerUnit_east').value = pEast.toFixed(2);
+      }
+    } else if (last === 'pricePerUnit_east') {
+      const pEast = parseFloat(document.getElementById('a_pricePerUnit_east').value);
+      if (!isNaN(pEast)) {
+        const pWest = convertAreaPriceEastToWest(pEast, rate);
+        document.getElementById('a_pricePerUnit_west').value = pWest.toFixed(2);
+      }
+    }
+
+    if (last === 'qty_west') {
+      const qWest = parseFloat(document.getElementById('a_qty_west').value);
+      if (!isNaN(qWest)) {
+        const qEast = convertAreaWestToEast(qWest, state.westAreaUnit, state.eastAreaUnit);
+        document.getElementById('a_qty_east').value = qEast.toFixed(3);
+      }
+    } else if (last === 'qty_east') {
+      const qEast = parseFloat(document.getElementById('a_qty_east').value);
+      if (!isNaN(qEast)) {
+        const qWest = convertAreaEastToWest(qEast, state.eastAreaUnit, state.westAreaUnit);
+        document.getElementById('a_qty_west').value = qWest.toFixed(2);
+      }
+    }
+
+    if (last === 'total_west') {
+      const tWest = parseFloat(document.getElementById('a_total_west').value);
+      if (!isNaN(tWest)) {
+        document.getElementById('a_total_east').value = (tWest * rate).toFixed(2);
+      }
+    } else if (last === 'total_east') {
+      const tEast = parseFloat(document.getElementById('a_total_east').value);
+      if (!isNaN(tEast) && rate > 0) {
+        document.getElementById('a_total_west').value = (tEast / rate).toFixed(2);
+      }
+    }
+  }
+
+  function calcWestTotalFromArea() {
+    const p = parseFloat(document.getElementById('a_pricePerUnit_west').value);
+    const q = parseFloat(document.getElementById('a_qty_west').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('a_total_west').value = (p * q).toFixed(2);
+      state.lastEditedArea = 'total_west';
+      recalculateArea();
+    }
+  }
+
+  function calcEastTotalFromArea() {
+    const p = parseFloat(document.getElementById('a_pricePerUnit_east').value);
+    const q = parseFloat(document.getElementById('a_qty_east').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('a_total_east').value = (p * q).toFixed(2);
+      state.lastEditedArea = 'total_east';
+      recalculateArea();
+    }
+  }
+
+  function calcWestUnitPriceFromAreaTotal() {
+    const t = parseFloat(document.getElementById('a_total_west').value);
+    const q = parseFloat(document.getElementById('a_qty_west').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('a_pricePerUnit_west').value = (t / q).toFixed(2);
+      state.lastEditedArea = 'pricePerUnit_west';
+      recalculateArea();
+    }
+  }
+
+  function calcEastUnitPriceFromAreaTotal() {
+    const t = parseFloat(document.getElementById('a_total_east').value);
+    const q = parseFloat(document.getElementById('a_qty_east').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('a_pricePerUnit_east').value = (t / q).toFixed(2);
+      state.lastEditedArea = 'pricePerUnit_east';
+      recalculateArea();
+    }
+  }
+
+  function compareAreaCost() {
+    const rate = getCurrentExchangeRate();
+    let pWest = parseFloat(document.getElementById('a_pricePerUnit_west').value);
+    let pEast = parseFloat(document.getElementById('a_pricePerUnit_east').value);
+
+    const banner = document.getElementById('a_cmprBanner');
+    const titleEl = document.getElementById('a_cmprTitle');
+    const detailEl = document.getElementById('a_cmprDetail');
+
+    if (isNaN(pWest) || isNaN(pEast)) {
+      alert('Please enter both unit prices to compare.');
+      return;
+    }
+
+    let pricePerSqFt = pWest;
+    if (state.westAreaUnit === 'sqm') pricePerSqFt = pWest * ONE_SQFT_TO_SQM;
+    let westInEastPerPing = pricePerSqFt * rate * ONE_PNG_TO_SQFT;
+
+    let eastInEastPerPing = pEast;
+    if (state.eastAreaUnit === 'mu') eastInEastPerPing = pEast / ONE_MU_TO_PNG;
+
+    const baseName = getBaseCurrencyCode();
+    const targetName = getTargetCurrencyCode();
+
+    banner.classList.add('active');
+
+    if (Math.abs(westInEastPerPing - eastInEastPerPing) < 0.01) {
+      titleEl.textContent = '⚖️ Identical Area Value!';
+      detailEl.textContent = `Both equal ${westInEastPerPing.toFixed(2)} ${targetName}/Ping.`;
+    } else if (westInEastPerPing < eastInEastPerPing) {
+      const diffPct = (((eastInEastPerPing - westInEastPerPing) / eastInEastPerPing) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${baseName} Area is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${baseName} price equals ${westInEastPerPing.toFixed(2)} ${targetName}/Ping vs ${eastInEastPerPing.toFixed(2)} ${targetName}/Ping.`;
+    } else {
+      const diffPct = (((westInEastPerPing - eastInEastPerPing) / westInEastPerPing) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${targetName} Area is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${targetName} price equals ${eastInEastPerPing.toFixed(2)} ${targetName}/Ping vs ${westInEastPerPing.toFixed(2)} ${targetName}/Ping from ${baseName}.`;
+    }
+  }
+
+  /* =========================================================
+     TAB & INITIALIZATION
+     ========================================================= */
+  function switchTab(tab) {
+    state.activeTab = tab;
+    const btnWeight = document.getElementById('tabCostWeight');
+    const btnArea = document.getElementById('tabCostArea');
+    const viewWeight = document.getElementById('viewWeight');
+    const viewArea = document.getElementById('viewArea');
+
+    if (tab === 'weight') {
+      btnWeight.classList.add('active');
+      btnArea.classList.remove('active');
+      viewWeight.classList.add('active');
+      viewArea.classList.remove('active');
+      recalculateWeight();
+    } else {
+      btnArea.classList.add('active');
+      btnWeight.classList.remove('active');
+      viewArea.classList.add('active');
+      viewWeight.classList.remove('active');
+      recalculateArea();
+    }
+  }
+
+  function recalculateActiveTab() {
+    if (state.activeTab === 'weight') {
+      recalculateWeight();
+    } else {
+      recalculateArea();
+    }
+  }
+
+  // Initialize defaults on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    updateCurrencyLabels();
+
+    document.getElementById('w_pricePerUnit_west').value = '10.00';
+    document.getElementById('w_qty_west').value = '2.00';
+    document.getElementById('w_total_west').value = '20.00';
+
+    document.getElementById('a_pricePerUnit_west').value = '500.00';
+    document.getElementById('a_qty_west').value = '1000.00';
+    document.getElementById('a_total_west').value = '500000.00';
+
+    recalculateWeight();
+    recalculateArea();
+
+    fetchLiveExchangeRates();
+  });
+</script>
+
+</body>
+</html>
