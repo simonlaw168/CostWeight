@@ -503,8 +503,8 @@
   <header>
     <div class="header-content">
       <div>
-        <h1>CostWeight &amp; CostArea</h1>
-        <div style="font-size: 0.78rem; opacity: 0.85; margin-top: 2px;">US / TW / HK / CN Currency &amp; Unit Converter</div>
+        <h1>CostWeight &amp; CostArea &amp; CostLength</h1>
+        <div style="font-size: 0.78rem; opacity: 0.85; margin-top: 2px;">US / TW / HK / CN Currency, Weight, Area &amp; Length Converter</div>
       </div>
       <div style="display: flex; gap: 6px; align-items: center;">
         <button class="theme-toggle-btn" id="btnInstallApp" onclick="installPwa()" style="display: none; background: rgba(66, 165, 245, 0.25); border-color: #64b5f6;" title="Install App to Home Screen">
@@ -520,10 +520,13 @@
   <!-- Navigation Tabs -->
   <div class="tabs">
     <button class="tab-btn active" id="tabCostWeight" onclick="switchTab('weight')">
-      ⚖️ CostWeight (Weight)
+      ⚖️ Weight
     </button>
     <button class="tab-btn" id="tabCostArea" onclick="switchTab('area')">
-      📐 CostArea (Land/Area)
+      📐 Area
+    </button>
+    <button class="tab-btn" id="tabCostLength" onclick="switchTab('length')">
+      📏 Length
     </button>
   </div>
 
@@ -798,8 +801,145 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- TAB 3: COST LENGTH -->
+  <!-- ========================================== -->
+  <div class="tab-content" id="viewLength">
+    <!-- Unit Selector Row -->
+    <div class="options-row" style="flex-wrap: wrap; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span class="switch-label">English:</span>
+        <select id="l_selEnglishUnit" onchange="onEnglishLengthUnitChange()">
+          <option value="feet" selected>Feet (ft)</option>
+          <option value="inch">Inch (in)</option>
+          <option value="yard">Yard (yd)</option>
+          <option value="mile">Mile (mi)</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span class="switch-label">Metric:</span>
+        <select id="l_selMetricUnit" onchange="onMetricLengthUnitChange()">
+          <option value="m" selected>Meter (m)</option>
+          <option value="cm">Centimeter (cm)</option>
+          <option value="mm">Millimeter (mm)</option>
+          <option value="km">Kilometer (km)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Main Comparison Grid -->
+    <div class="two-col-grid">
+      <!-- Left Column (English Length) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="l_titleWestCol">English Length</span>
+          <span class="badge" id="l_curWestTag">USD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblLengthPriceWest">$/ft</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_pricePerUnit_west" placeholder="0.00" oninput="onInputLength('pricePerUnit_west')">
+            <span class="unit-tag" id="tag_l_pricePerUnit_west">$/ft</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Length
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblLengthUnitWest">ft</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_qty_west" placeholder="0.00" oninput="onInputLength('qty_west')">
+            <span class="unit-tag" id="tag_l_qty_west">ft</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="l_lblTotalCostWest">USD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_total_west" placeholder="0.00" oninput="onInputLength('total_west')">
+            <span class="unit-tag" id="tag_l_total_west">USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (Metric Length) -->
+      <div class="col-box">
+        <div class="col-header">
+          <span id="l_titleEastCol">Metric Length</span>
+          <span class="badge" id="l_curEastTag">NTD</span>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Unit Price
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblLengthPriceEast">NTD/m</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_pricePerUnit_east" placeholder="0.00" oninput="onInputLength('pricePerUnit_east')">
+            <span class="unit-tag" id="tag_l_pricePerUnit_east">NTD/m</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Length
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="lblLengthUnitEast">m</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_qty_east" placeholder="0.00" oninput="onInputLength('qty_east')">
+            <span class="unit-tag" id="tag_l_qty_east">m</span>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>
+            Total Cost
+            <span style="font-size: 0.72rem; color: var(--text-muted);" id="l_lblTotalCostEast">NTD</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="number" step="any" id="l_total_east" placeholder="0.00" oninput="onInputLength('total_east')">
+            <span class="unit-tag" id="tag_l_total_east">NTD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+      <button class="action-btn primary" onclick="compareLengthCost()">
+        📏 Compare Length Value
+      </button>
+      <button class="action-btn" onclick="calcWestTotalFromLength()">
+        <span id="btnTxtWestLengthCalc">USD = $/ft × ft</span>
+      </button>
+      <button class="action-btn" onclick="calcEastTotalFromLength()">
+        <span id="btnTxtEastLengthCalc">NTD = NTD/m × m</span>
+      </button>
+      <button class="action-btn" onclick="calcWestUnitPriceFromLengthTotal()">
+        <span id="btnTxtWestLengthUnitPrice">$/ft = Total ÷ ft</span>
+      </button>
+      <button class="action-btn" onclick="calcEastUnitPriceFromLengthTotal()">
+        <span id="btnTxtEastLengthUnitPrice">NTD/m = Total ÷ m</span>
+      </button>
+    </div>
+
+    <!-- Comparison Result Banner -->
+    <div class="cmpr-banner" id="l_cmprBanner">
+      <div class="cmpr-title" id="l_cmprTitle">Length Cost Comparison</div>
+      <div class="cmpr-detail" id="l_cmprDetail">Details...</div>
+    </div>
+  </div>
+
   <footer>
-    CostWeight &amp; CostArea Web App • Dark &amp; Light Mode
+    CostWeight &amp; CostArea &amp; CostLength Web App • Dark &amp; Light Mode
   </footer>
 </div>
 
@@ -843,6 +983,31 @@
   const ONE_SQM_TO_SQFT = 10.764;      // 1 sqm = 10.764 sqft
   const ONE_SQFT_TO_SQM = 1.0 / 10.764;
 
+  // Length Constants (relative to 1 meter)
+  const LENGTH_TO_METERS = {
+    // English
+    inch: 0.0254,
+    feet: 0.3048,
+    yard: 0.9144,
+    mile: 1609.344,
+    // Metric
+    mm: 0.001,
+    cm: 0.01,
+    m: 1.0,
+    km: 1000.0
+  };
+
+  const LENGTH_UNIT_SYMBOLS = {
+    inch: 'in',
+    feet: 'ft',
+    yard: 'yd',
+    mile: 'mi',
+    mm: 'mm',
+    cm: 'cm',
+    m: 'm',
+    km: 'km'
+  };
+
   /* =========================================================
      APP STATE
      ========================================================= */
@@ -860,6 +1025,10 @@
     westAreaUnit: 'sqft', // 'sqft' or 'sqm'
     eastAreaUnit: 'png',  // 'png' or 'mu'
 
+    // Length Units
+    englishLengthUnit: 'feet', // 'inch', 'feet', 'yard', 'mile'
+    metricLengthUnit: 'm',     // 'mm', 'cm', 'm', 'km'
+
     // Stored live rates (USD base)
     rates: {
       TWD: 32.50,
@@ -870,7 +1039,8 @@
 
     // Last edited tracking for auto-recalculation
     lastEditedWeight: 'pricePerUnit_west',
-    lastEditedArea: 'pricePerUnit_west'
+    lastEditedArea: 'pricePerUnit_west',
+    lastEditedLength: 'pricePerUnit_west'
   };
 
   /* =========================================================
@@ -924,6 +1094,17 @@
     document.getElementById('tag_a_total_east').textContent = target;
     document.getElementById('a_lblTotalCostEast').textContent = target;
 
+    // Length Column Tags
+    document.getElementById('l_curWestTag').textContent = base;
+    document.getElementById('l_curEastTag').textContent = target;
+    document.getElementById('l_titleWestCol').textContent = base === 'USD' ? 'US Length' : 'HK Length';
+    document.getElementById('l_titleEastCol').textContent = target === 'NTD' ? 'Taiwan Length' : 'China Length';
+
+    document.getElementById('tag_l_total_west').textContent = base;
+    document.getElementById('l_lblTotalCostWest').textContent = base;
+    document.getElementById('tag_l_total_east').textContent = target;
+    document.getElementById('l_lblTotalCostEast').textContent = target;
+
     // Unit Price Tags
     const westWeightUnitTag = state.westWeightUnit.toUpperCase();
     const eastWeightUnitTag = state.eastWeightUnit === 'jin' ? 'Jin' : 'Gm';
@@ -946,6 +1127,22 @@
     document.getElementById('lblAreaPriceEast').textContent = eastAreaPriceStr;
     document.getElementById('tag_a_pricePerUnit_east').textContent = eastAreaPriceStr;
 
+    // Length Unit Price Tags
+    const engTag = LENGTH_UNIT_SYMBOLS[state.englishLengthUnit] || 'ft';
+    const metricTag = LENGTH_UNIT_SYMBOLS[state.metricLengthUnit] || 'm';
+    const westLengthPriceStr = base === 'USD' ? `$/${engTag}` : `HKD/${engTag}`;
+    const eastLengthPriceStr = `${target}/${metricTag}`;
+
+    document.getElementById('lblLengthPriceWest').textContent = westLengthPriceStr;
+    document.getElementById('tag_l_pricePerUnit_west').textContent = westLengthPriceStr;
+    document.getElementById('lblLengthPriceEast').textContent = eastLengthPriceStr;
+    document.getElementById('tag_l_pricePerUnit_east').textContent = eastLengthPriceStr;
+
+    document.getElementById('lblLengthUnitWest').textContent = engTag;
+    document.getElementById('tag_l_qty_west').textContent = engTag;
+    document.getElementById('lblLengthUnitEast').textContent = metricTag;
+    document.getElementById('tag_l_qty_east').textContent = metricTag;
+
     // Button Labels
     document.getElementById('btnTxtWestCalc').textContent = `${base} = ${westUnitPriceStr} × ${westWeightUnitTag}`;
     document.getElementById('btnTxtEastCalc').textContent = `${target} = ${eastUnitPriceStr} × ${eastWeightUnitTag}`;
@@ -956,6 +1153,11 @@
     document.getElementById('btnTxtEastAreaCalc').textContent = `${target} = ${eastAreaPriceStr} × ${eastAreaTag}`;
     document.getElementById('btnTxtWestAreaUnitPrice').textContent = `${westAreaPriceStr} = Total ÷ ${westAreaTag}`;
     document.getElementById('btnTxtEastAreaUnitPrice').textContent = `${eastAreaPriceStr} = Total ÷ ${eastAreaTag}`;
+
+    document.getElementById('btnTxtWestLengthCalc').textContent = `${base} = ${westLengthPriceStr} × ${engTag}`;
+    document.getElementById('btnTxtEastLengthCalc').textContent = `${target} = ${eastLengthPriceStr} × ${metricTag}`;
+    document.getElementById('btnTxtWestLengthUnitPrice').textContent = `${westLengthPriceStr} = Total ÷ ${engTag}`;
+    document.getElementById('btnTxtEastLengthUnitPrice').textContent = `${eastLengthPriceStr} = Total ÷ ${metricTag}`;
 
     // Currency Switch Button States
     document.getElementById('labelUsHk').textContent = state.isUsd ? 'USD (Click for HKD)' : 'HKD (Click for USD)';
@@ -1470,35 +1672,245 @@
   }
 
   /* =========================================================
+     LENGTH LOGIC & CONVERSIONS
+     ========================================================= */
+  function onEnglishLengthUnitChange() {
+    const oldUnit = state.englishLengthUnit;
+    const newUnit = document.getElementById('l_selEnglishUnit').value;
+    state.englishLengthUnit = newUnit;
+
+    const inputEl = document.getElementById('l_qty_west');
+    let val = parseFloat(inputEl.value);
+    if (!isNaN(val)) {
+      const meters = val * LENGTH_TO_METERS[oldUnit];
+      const converted = meters / LENGTH_TO_METERS[newUnit];
+      inputEl.value = formatNumberLength(converted);
+    }
+
+    updateCurrencyLabels();
+    recalculateLength();
+  }
+
+  function onMetricLengthUnitChange() {
+    const oldUnit = state.metricLengthUnit;
+    const newUnit = document.getElementById('l_selMetricUnit').value;
+    state.metricLengthUnit = newUnit;
+
+    const inputEl = document.getElementById('l_qty_east');
+    let val = parseFloat(inputEl.value);
+    if (!isNaN(val)) {
+      const meters = val * LENGTH_TO_METERS[oldUnit];
+      const converted = meters / LENGTH_TO_METERS[newUnit];
+      inputEl.value = formatNumberLength(converted);
+    }
+
+    updateCurrencyLabels();
+    recalculateLength();
+  }
+
+  function convertLengthWestToEast(westVal, engUnit, metricUnit) {
+    if (isNaN(westVal)) return NaN;
+    const meters = westVal * LENGTH_TO_METERS[engUnit];
+    return meters / LENGTH_TO_METERS[metricUnit];
+  }
+
+  function convertLengthEastToWest(eastVal, metricUnit, engUnit) {
+    if (isNaN(eastVal)) return NaN;
+    const meters = eastVal * LENGTH_TO_METERS[metricUnit];
+    return meters / LENGTH_TO_METERS[engUnit];
+  }
+
+  function convertLengthPriceWestToEast(westPrice, rate, engUnit, metricUnit) {
+    if (isNaN(westPrice)) return NaN;
+    const ratio = LENGTH_TO_METERS[metricUnit] / LENGTH_TO_METERS[engUnit];
+    return westPrice * rate * ratio;
+  }
+
+  function convertLengthPriceEastToWest(eastPrice, rate, engUnit, metricUnit) {
+    if (isNaN(eastPrice) || rate <= 0) return NaN;
+    const ratio = LENGTH_TO_METERS[metricUnit] / LENGTH_TO_METERS[engUnit];
+    return eastPrice / (rate * ratio);
+  }
+
+  function onInputLength(field) {
+    state.lastEditedLength = field;
+    recalculateLength();
+  }
+
+  function formatNumberLength(num) {
+    if (isNaN(num)) return '';
+    if (Math.abs(num) >= 100) return num.toFixed(2);
+    if (Math.abs(num) >= 1) return num.toFixed(3);
+    return num.toFixed(4);
+  }
+
+  function recalculateLength() {
+    const rate = getCurrentExchangeRate();
+    const last = state.lastEditedLength;
+    const engUnit = state.englishLengthUnit;
+    const metricUnit = state.metricLengthUnit;
+
+    // Unit Price Sync
+    if (last === 'pricePerUnit_west') {
+      const pWest = parseFloat(document.getElementById('l_pricePerUnit_west').value);
+      if (!isNaN(pWest)) {
+        const pEast = convertLengthPriceWestToEast(pWest, rate, engUnit, metricUnit);
+        document.getElementById('l_pricePerUnit_east').value = pEast.toFixed(2);
+      }
+    } else if (last === 'pricePerUnit_east') {
+      const pEast = parseFloat(document.getElementById('l_pricePerUnit_east').value);
+      if (!isNaN(pEast)) {
+        const pWest = convertLengthPriceEastToWest(pEast, rate, engUnit, metricUnit);
+        document.getElementById('l_pricePerUnit_west').value = pWest.toFixed(2);
+      }
+    }
+
+    // Length Quantity Sync
+    if (last === 'qty_west') {
+      const qWest = parseFloat(document.getElementById('l_qty_west').value);
+      if (!isNaN(qWest)) {
+        const qEast = convertLengthWestToEast(qWest, engUnit, metricUnit);
+        document.getElementById('l_qty_east').value = formatNumberLength(qEast);
+      }
+    } else if (last === 'qty_east') {
+      const qEast = parseFloat(document.getElementById('l_qty_east').value);
+      if (!isNaN(qEast)) {
+        const qWest = convertLengthEastToWest(qEast, metricUnit, engUnit);
+        document.getElementById('l_qty_west').value = formatNumberLength(qWest);
+      }
+    }
+
+    // Total Cost Sync
+    if (last === 'total_west') {
+      const tWest = parseFloat(document.getElementById('l_total_west').value);
+      if (!isNaN(tWest)) {
+        document.getElementById('l_total_east').value = (tWest * rate).toFixed(2);
+      }
+    } else if (last === 'total_east') {
+      const tEast = parseFloat(document.getElementById('l_total_east').value);
+      if (!isNaN(tEast) && rate > 0) {
+        document.getElementById('l_total_west').value = (tEast / rate).toFixed(2);
+      }
+    }
+  }
+
+  function calcWestTotalFromLength() {
+    const p = parseFloat(document.getElementById('l_pricePerUnit_west').value);
+    const q = parseFloat(document.getElementById('l_qty_west').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('l_total_west').value = (p * q).toFixed(2);
+      state.lastEditedLength = 'total_west';
+      recalculateLength();
+    }
+  }
+
+  function calcEastTotalFromLength() {
+    const p = parseFloat(document.getElementById('l_pricePerUnit_east').value);
+    const q = parseFloat(document.getElementById('l_qty_east').value);
+    if (!isNaN(p) && !isNaN(q)) {
+      document.getElementById('l_total_east').value = (p * q).toFixed(2);
+      state.lastEditedLength = 'total_east';
+      recalculateLength();
+    }
+  }
+
+  function calcWestUnitPriceFromLengthTotal() {
+    const t = parseFloat(document.getElementById('l_total_west').value);
+    const q = parseFloat(document.getElementById('l_qty_west').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('l_pricePerUnit_west').value = (t / q).toFixed(2);
+      state.lastEditedLength = 'pricePerUnit_west';
+      recalculateLength();
+    }
+  }
+
+  function calcEastUnitPriceFromLengthTotal() {
+    const t = parseFloat(document.getElementById('l_total_east').value);
+    const q = parseFloat(document.getElementById('l_qty_east').value);
+    if (!isNaN(t) && !isNaN(q) && q > 0) {
+      document.getElementById('l_pricePerUnit_east').value = (t / q).toFixed(2);
+      state.lastEditedLength = 'pricePerUnit_east';
+      recalculateLength();
+    }
+  }
+
+  function compareLengthCost() {
+    const rate = getCurrentExchangeRate();
+    let pWest = parseFloat(document.getElementById('l_pricePerUnit_west').value);
+    let pEast = parseFloat(document.getElementById('l_pricePerUnit_east').value);
+
+    const banner = document.getElementById('l_cmprBanner');
+    const titleEl = document.getElementById('l_cmprTitle');
+    const detailEl = document.getElementById('l_cmprDetail');
+
+    if (isNaN(pWest) || isNaN(pEast)) {
+      alert('Please enter both unit prices to compare.');
+      return;
+    }
+
+    const engUnit = state.englishLengthUnit;
+    const metricUnit = state.metricLengthUnit;
+    const engTag = LENGTH_UNIT_SYMBOLS[engUnit];
+    const metricTag = LENGTH_UNIT_SYMBOLS[metricUnit];
+
+    const westInTargetPerMeter = (pWest / LENGTH_TO_METERS[engUnit]) * rate;
+    const eastInTargetPerMeter = pEast / LENGTH_TO_METERS[metricUnit];
+
+    const baseName = getBaseCurrencyCode();
+    const targetName = getTargetCurrencyCode();
+
+    banner.classList.add('active');
+
+    if (Math.abs(westInTargetPerMeter - eastInTargetPerMeter) < 0.01) {
+      titleEl.textContent = '⚖️ Identical Length Value!';
+      detailEl.textContent = `Both equal ${westInTargetPerMeter.toFixed(2)} ${targetName}/m.`;
+    } else if (westInTargetPerMeter < eastInTargetPerMeter) {
+      const diffPct = (((eastInTargetPerMeter - westInTargetPerMeter) / eastInTargetPerMeter) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${baseName} (${engTag}) is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${baseName} price equals ${westInTargetPerMeter.toFixed(2)} ${targetName}/m vs ${eastInTargetPerMeter.toFixed(2)} ${targetName}/m.`;
+    } else {
+      const diffPct = (((westInTargetPerMeter - eastInTargetPerMeter) / westInTargetPerMeter) * 100).toFixed(1);
+      titleEl.textContent = `🏆 ${targetName} (${metricTag}) is CHEAPER by ${diffPct}%!`;
+      detailEl.textContent = `${targetName} price equals ${eastInTargetPerMeter.toFixed(2)} ${targetName}/m vs ${westInTargetPerMeter.toFixed(2)} ${targetName}/m from ${baseName}.`;
+    }
+  }
+
+  /* =========================================================
      TAB & INITIALIZATION
      ========================================================= */
   function switchTab(tab) {
     state.activeTab = tab;
     const btnWeight = document.getElementById('tabCostWeight');
     const btnArea = document.getElementById('tabCostArea');
+    const btnLength = document.getElementById('tabCostLength');
     const viewWeight = document.getElementById('viewWeight');
     const viewArea = document.getElementById('viewArea');
+    const viewLength = document.getElementById('viewLength');
+
+    btnWeight.classList.toggle('active', tab === 'weight');
+    btnArea.classList.toggle('active', tab === 'area');
+    btnLength.classList.toggle('active', tab === 'length');
+
+    viewWeight.classList.toggle('active', tab === 'weight');
+    viewArea.classList.toggle('active', tab === 'area');
+    viewLength.classList.toggle('active', tab === 'length');
 
     if (tab === 'weight') {
-      btnWeight.classList.add('active');
-      btnArea.classList.remove('active');
-      viewWeight.classList.add('active');
-      viewArea.classList.remove('active');
       recalculateWeight();
-    } else {
-      btnArea.classList.add('active');
-      btnWeight.classList.remove('active');
-      viewArea.classList.add('active');
-      viewWeight.classList.remove('active');
+    } else if (tab === 'area') {
       recalculateArea();
+    } else if (tab === 'length') {
+      recalculateLength();
     }
   }
 
   function recalculateActiveTab() {
     if (state.activeTab === 'weight') {
       recalculateWeight();
-    } else {
+    } else if (state.activeTab === 'area') {
       recalculateArea();
+    } else if (state.activeTab === 'length') {
+      recalculateLength();
     }
   }
 
@@ -1515,8 +1927,13 @@
     document.getElementById('a_qty_west').value = '1000.00';
     document.getElementById('a_total_west').value = '500000.00';
 
+    document.getElementById('l_pricePerUnit_west').value = '15.00';
+    document.getElementById('l_qty_west').value = '10.00';
+    document.getElementById('l_total_west').value = '150.00';
+
     recalculateWeight();
     recalculateArea();
+    recalculateLength();
 
     fetchLiveExchangeRates();
   });

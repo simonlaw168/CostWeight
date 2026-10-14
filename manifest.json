@@ -1,7 +1,7 @@
 {
-  "name": "CostWeight & CostArea",
-  "short_name": "CostWeight",
-  "description": "US, Taiwan, HK, and China Currency and Unit Converter",
+  "name": "CostWeight & CostArea & CostLength",
+  "short_name": "CostCalc",
+  "description": "US, Taiwan, HK, and China Currency, Weight, Area, and Length Converter",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",

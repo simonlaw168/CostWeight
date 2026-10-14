@@ -1,4 +1,4 @@
-const CACHE_NAME = 'costweight-cache-v1';
+const CACHE_NAME = 'costweight-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -28,7 +28,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Try network first, fall back to cache for offline support
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
